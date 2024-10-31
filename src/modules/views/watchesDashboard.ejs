@@ -1,0 +1,378 @@
+<%- include('partials/dashboard.ejs') %>
+    <form class="nav col-12 col-md-auto flex-fill mb-2 justify-content-center mb-md-0" role="search"
+        action="/watches/search">
+        <input type="search" name="watches" class="form-control form-control-dark w-100 rounded-0 border-0"
+            placeholder="Search watch by watch name..." aria-label="Search">
+        <input type="hidden" name="admin" value="true">
+    </form>
+
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3 sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <div class="nav-group">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/accounts">
+                                    <i class="bi bi-house"></i>
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/brands">
+                                    <i class="bi bi-patch-question"></i>
+                                    Brand
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/watches">
+                                    <i class="bi bi-patch-question"></i>
+                                    Watches
+                                </a>
+                            </li>
+                        </div>
+
+                        <div class="nav-logout" style="margin-top: 200px;">
+                            <!-- thêm mt-auto để đẩy logout xuống dưới -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="/api/auth/logout">
+                                    <i class="bi bi-patch-question"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </div>
+                    </ul>
+
+                </div>
+            </nav>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Watches</h1>
+                    <div class="btn-toolbar mb-2 mb-md 0">
+                        <div class="btn-group me-2">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#addModal"
+                                class="btn btn-sm btn-outline-secondary">+ New Watch</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addModalLabel">Add new Watch
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addWatchForm" action="/api/watch/create" method="post"
+                                    class="position-relative add-brand-form">
+                                    <label for="brandName">Watch
+                                        Name<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" id="watchName" name="watchName" required>
+                                    <label for="image" class="mt-2">Image<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" id="image" name="image" required>
+                                    <label for="price" class="mt-2">Price($)<span style="color: red;">*</span></label>
+                                    <input type="number" class="form-control" id="price" name="price" required>
+                                    <div class="mt-2">
+                                        <label for="automatic">Automatic<span style="color: red;">*</span></label>
+                                        <input type="checkbox" class="form-check-input" id="automatic" value=true
+                                            name="automatic">
+                                    </div>
+                                    <div class="mt-2">
+                                        <label for="brandName">Brand<span style="color: red;">*</span></label>
+                                    </div>
+                                    <select class="form-select" id="brandName" name="brandName" required>
+                                        <option value="">Select Brand</option>
+                                        <% brands.forEach(function(brand) { %>
+                                            <option value="<%= brand._id %>">
+                                                <%= brand.brandName %>
+                                            </option>
+                                            <% }); %>
+                                    </select>
+                                    <label for="watchDescription" class="mt-2">Watch Description<span
+                                            style="color: red;">*</span></label>
+                                    <textarea class="form-control" name="watchDescription" id="watchDescription"
+                                        cols="30" rows="12"></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add new Watch</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Hiển thị Flash Messages -->
+                <% if (success_msg && success_msg.length> 0) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= success_msg %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <% } %>
+
+                        <% if (error_msg && error_msg.length> 0) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <%= error_msg %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                            </div>
+                            <% } %>
+                                <% if (info_msg && info_msg.length> 0) { %>
+                                    <div class="alert alert-info alert-dismissible fade show custom-alert" role="alert">
+                                        <%= info_msg %>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <% } %>
+                                        <div class="table-responsive">
+
+                                            <table class="table table-striped table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Index</th>
+                                                        <th scope="col">Image</th>
+                                                        <th scope="col">Watch name</th>
+                                                        <th scope="col">Brand name</th>
+                                                        <th scope="col" class="text-end">Action</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <% watches.forEach((element, index)=> { %>
+                                                        <tr class="align-middle" id="watch-row-<%= element._id %>">
+                                                            <td>
+                                                                <%= index + 1 %>
+                                                            </td>
+                                                            <td>
+                                                                <img width="100" height="100" style="object-fit: cover;"
+                                                                    src="<%= element.image %>" alt="image">
+                                                            </td>
+                                                            <td>
+                                                                <%= element.watchName %>
+                                                            </td>
+                                                            <td>
+                                                                <%= element.brand.brandName %>
+                                                            </td>
+                                                            <td class="text-end">
+
+                                                                <div class="d-flex flex-row justify-content-end gap-2">
+                                                                    <a href="/watchDetail?watchName=<%= element.watchName %>"
+                                                                        type="button" class="btn btn-primary btn-small">
+                                                                        <i class="bi bi-eye"></i>
+                                                                    </a>
+
+                                                                    <button type="button"
+                                                                        class="btn btn-warning btn-small"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editModal-<%= element._id %>"
+                                                                        data-watch-id="<%= element._id %>"
+                                                                        data-watch-name="<%= element.watchName %>">
+                                                                        <i class="bi bi-pencil"></i>
+                                                                    </button>
+
+                                                                    <!-- Modal với id độc nhất -->
+                                                                    <div class="modal fade"
+                                                                        id="editModal-<%= element._id %>" tabindex="-1"
+                                                                        role="dialog"
+                                                                        aria-labelledby="editModalLabel-<%= element._id %>"
+                                                                        aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title"
+                                                                                        id="editModalLabel-<%= element._id %>">
+                                                                                        Update Watch Name
+                                                                                    </h5>
+                                                                                    <button type="button"
+                                                                                        class="btn-close"
+                                                                                        data-bs-dismiss="modal"
+                                                                                        aria-label="Close"></button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <form class="edit-watch-form"
+                                                                                        action="/api/watch/edit-watch?_method=PUT&watchId=<%= element._id %>"
+                                                                                        method="POST">
+                                                                                        <div
+                                                                                            class="row form-group mb-4">
+                                                                                            <div class="col">
+                                                                                                <input type="hidden"
+                                                                                                    name="index"
+                                                                                                    value="<%= index+1 %>">
+                                                                                                <label
+                                                                                                    for="watchName-<%= element._id %>"
+                                                                                                    class="d-flex">Watch
+                                                                                                    Name</label>
+                                                                                                <input type="text"
+                                                                                                    class="form-control"
+                                                                                                    id="watchName-<%= element._id %>"
+                                                                                                    name="watchName"
+                                                                                                    value="<%= element.watchName %>"
+                                                                                                    required>
+                                                                                                <label for="image"
+                                                                                                    class="mt-2">Image</label>
+                                                                                                <input type="text"
+                                                                                                    class="form-control"
+                                                                                                    id="image"
+                                                                                                    name="image"
+                                                                                                    value="<%= element.image %>"
+                                                                                                    required>
+                                                                                                <label
+                                                                                                    for="price-<%= element._id %>"
+                                                                                                    class="d-flex">Price</label>
+                                                                                                <input type="number"
+                                                                                                    class="form-control"
+                                                                                                    id="price-<%= element._id %>"
+                                                                                                    name="price"
+                                                                                                    value="<%= element.price %>"
+                                                                                                    required>
+                                                                                                <label
+                                                                                                    for="automatic">Automatic</label>
+                                                                                                <input type="checkbox"
+                                                                                                    class="form-check-input"
+                                                                                                    id="automatic"
+                                                                                                    value=true
+                                                                                                    name="automatic">
+                                                                                                <label
+                                                                                                    for="brandName">Brand</label>
+                                                                                                <select
+                                                                                                    class="form-select"
+                                                                                                    id="brandName"
+                                                                                                    name="brandName"
+                                                                                                    required>
+                                                                                                    <option
+                                                                                                        value="<%= element.brandName %>">
+                                                                                                        <%= element.brand.brandName
+                                                                                                            %>
+                                                                                                    </option>
+                                                                                                    <% brands.forEach(function(brand)
+                                                                                                        { %>
+                                                                                                        <option
+                                                                                                            value="<%= brand._id %>">
+                                                                                                            <%= brand.brandName
+                                                                                                                %>
+                                                                                                        </option>
+                                                                                                        <% }); %>
+                                                                                                </select>
+                                                                                                <label
+                                                                                                    for="watchDescription">Watch
+                                                                                                    Description</label>
+                                                                                                <textarea
+                                                                                                    class="form-control"
+                                                                                                    name="watchDescription"
+                                                                                                    id="watchDescription"
+                                                                                                    cols="30"
+                                                                                                    rows="12"><%= element.watchDescription %></textarea>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">Update
+                                                                                        Watch
+                                                                                        Name</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <form
+                                                                        action="/api/watch/delete?_method=DELETE&watchId=<%= element._id %>"
+                                                                        method="post">
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger btn-small"
+                                                                            data-watch-id="<%= element._id %>">
+                                                                            <i class="bi bi-trash"></i>
+                                                                        </button>
+                                                                    </form>
+
+                                                                </div>
+
+
+                                                            </td>
+                                                        </tr>
+                                                        <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+
+                                        <% if (watches.length> 0) { %>
+                                            <nav aria-label="Dashboard Pagination">
+                                                <ul class="pagination justify-content-center mt-5">
+
+                                                    <% if (current==1) { %>
+                                                        <li class="page-item disabled"><a href="#"
+                                                                class="page-link">First</a>
+                                                        </li>
+                                                        <% } else { %>
+                                                            <li class="page-item"><a href="/watches?page=1"
+                                                                    class="page-link">First</a>
+                                                            </li>
+                                                            <% } %>
+
+                                                                <% var i=(Number(current)> 5 ? Number(current) - 4 : 1)
+                                                                    %>
+                                                                    <% if(i !==1) { %>
+                                                                        <li class="page-item disabled"><a href="#"
+                                                                                class="page-link">...</a>
+                                                                        </li>
+                                                                        <% } %>
+
+                                                                            <% for(; i <=(Number(current) + 4) && i
+                                                                                <=pages; i++ ) { %>
+                                                                                <% if (i==current) { %>
+                                                                                    <li class="page-item disabled"><a
+                                                                                            href="#" class="page-link">
+                                                                                            <%= i %>
+                                                                                        </a></li>
+                                                                                    <% } else { %>
+                                                                                        <li class="page-item"><a
+                                                                                                href="/watches?page=<%= i %>"
+                                                                                                class="page-link">
+                                                                                                <%= i %>
+                                                                                            </a></li>
+                                                                                        <% } %>
+                                                                                            <% if (i==Number(current) +
+                                                                                                4 && i < pages) { %>
+                                                                                                <li
+                                                                                                    class="page-item disabled">
+                                                                                                    <a href="#"
+                                                                                                        class="page-link">...</a>
+                                                                                                </li>
+                                                                                                <% } %>
+                                                                                                    <% } %>
+
+                                                                                                        <% if
+                                                                                                            (current==pages)
+                                                                                                            { %>
+                                                                                                            <li
+                                                                                                                class="page-item disabled">
+                                                                                                                <a href="#"
+                                                                                                                    class="page-link">Last</a>
+                                                                                                            </li>
+                                                                                                            <% } else {
+                                                                                                                %>
+                                                                                                                <li
+                                                                                                                    class="page-item">
+                                                                                                                    <a href="/watches?page=<%= pages %>"
+                                                                                                                        class="page-link">Last</a>
+                                                                                                                </li>
+                                                                                                                <% } %>
+
+                                                </ul>
+                                            </nav>
+                                            <% } %>
+            </main>
+        </div>
+    </div>
+
+    <%- include('partials/dashboardFooter.ejs') %>

@@ -1,0 +1,299 @@
+<%- include('partials/dashboard.ejs') %>
+    <form class="nav col-12 col-md-auto flex-fill mb-2 justify-content-center mb-md-0" role="search" method="POST"
+        action="/search">
+        <input type="search" name="searchTerm" class="form-control form-control-dark w-100 rounded-0 border-0"
+            placeholder="Search..." aria-label="Search">
+    </form>
+
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+                <div class="position-sticky pt-3 sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <div class="nav-group">
+                            <li class="nav-item">
+                                <a class="nav-link active" aria-current="page" href="/accounts">
+                                    <i class="bi bi-house"></i>
+                                    Dashboard
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/brands">
+                                    <i class="bi bi-patch-question"></i>
+                                    Brand
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/watches">
+                                    <i class="bi bi-patch-question"></i>
+                                    Watches
+                                </a>
+                            </li>
+                        </div>
+
+                        <div class="nav-logout" style="margin-top: 200px;">
+                            <!-- thêm mt-auto để đẩy logout xuống dưới -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="/api/auth/logout">
+                                    <i class="bi bi-patch-question"></i>
+                                    Logout
+                                </a>
+                            </li>
+                        </div>
+                    </ul>
+
+                </div>
+            </nav>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Brands</h1>
+                    <div class="btn-toolbar mb-2 mb-md 0">
+                        <div class="btn-group me-2">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#addModal"
+                                class="btn btn-sm btn-outline-secondary">+ New Brand</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="addModalLabel">Add new Brand
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="addBrandForm" action="/api/brand/create" method="post"
+                                    class="position-relative add-brand-form">
+                                    <label for="brandName">Brand
+                                        Name<span style="color: red;">*</span></label>
+                                    <input type="text" class="form-control" id="brandName" name="brandName" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Add new Brand</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Hiển thị Flash Messages -->
+                <% if (success_msg && success_msg.length> 0) { %>
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <%= success_msg %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <% } %>
+
+                        <% if (error_msg && error_msg.length> 0) { %>
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <%= error_msg %>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                        aria-label="Close"></button>
+                            </div>
+                            <% } %>
+                                <% if (info_msg && info_msg.length> 0) { %>
+                                    <div class="alert alert-info alert-dismissible fade show" role="alert">
+                                        <%= info_msg %>
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                                aria-label="Close"></button>
+                                    </div>
+                                    <% } %>
+                                        <div class="table-responsive">
+
+                                            <table class="table table-striped table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th scope="col">Brand name</th>
+                                                        <th scope="col">Created At</th>
+                                                        <th scope="col">Updated At</th>
+                                                        <th scope="col" class="text-end">Action</th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody>
+                                                    <% brands.forEach(element=> { %>
+                                                        <tr class="align-middle" id="brand-row-<%= element._id %>">
+                                                            <td>
+                                                                <%= element.brandName %>
+                                                            </td>
+                                                            <td>
+                                                                <%= new Date(element.createdAt).toLocaleString('vi-VI',
+                                                                    { day: '2-digit' , month: '2-digit' ,
+                                                                    year: 'numeric' , hour: '2-digit' ,
+                                                                    minute: '2-digit' , second: '2-digit' }) %>
+                                                            </td>
+                                                            <td>
+                                                                <%= new Date(element.updatedAt).toLocaleString('vi-VI',
+                                                                    { day: '2-digit' , month: '2-digit' ,
+                                                                    year: 'numeric' , hour: '2-digit' ,
+                                                                    minute: '2-digit' , second: '2-digit' }) %>
+                                                            </td>
+                                                            <td class="text-end">
+
+                                                                <div class="d-flex flex-row justify-content-end gap-2">
+
+
+                                                                    <button type="button"
+                                                                        class="btn btn-warning btn-small"
+                                                                        data-bs-toggle="modal"
+                                                                        data-bs-target="#editModal-<%= element._id %>"
+                                                                        data-brand-id="<%= element._id %>"
+                                                                        data-brand-name="<%= element.brandName %>">
+                                                                        <i class="bi bi-pencil"></i>
+                                                                    </button>
+
+
+
+                                                                    <!-- Modal với id độc nhất -->
+                                                                    <div class="modal fade"
+                                                                        id="editModal-<%= element._id %>" tabindex="-1"
+                                                                        role="dialog"
+                                                                        aria-labelledby="editModalLabel-<%= element._id %>"
+                                                                        aria-hidden="true">
+                                                                        <div class="modal-dialog" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title"
+                                                                                        id="editModalLabel-<%= element._id %>">
+                                                                                        Update Brand Name
+                                                                                    </h5>
+                                                                                    <button type="button"
+                                                                                        class="btn-close"
+                                                                                        data-bs-dismiss="modal"
+                                                                                        aria-label="Close"></button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+                                                                                    <form class="edit-brand-form"
+                                                                                        action="/api/brand/edit-brand?_method=PUT&brandId=<%= element._id%>"
+                                                                                        data-brand-id="<%= element._id %>"
+                                                                                        method="post">
+                                                                                        <div
+                                                                                            class="row form-group mb-4">
+                                                                                            <div class="col">
+                                                                                                <label
+                                                                                                    for="brandName-<%= element._id %>"
+                                                                                                    class="d-flex">Brand
+                                                                                                    Name</label>
+                                                                                                <input type="text"
+                                                                                                    class="form-control"
+                                                                                                    id="brandName-<%= element._id %>"
+                                                                                                    name="brandName"
+                                                                                                    value="<%= element.brandName %>"
+                                                                                                    required>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">Update
+                                                                                        Brand
+                                                                                        Name</button>
+                                                                                    </form>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+
+
+                                                                    <form
+                                                                        action="/api/brand/delete?_method=DELETE&brandId=<%= element._id %>"
+                                                                        method="post">
+                                                                        <button type="submit"
+                                                                            class="btn btn-danger btn-small"
+                                                                            data-watch-id="<%= element._id %>">
+                                                                            <i class="bi bi-trash"></i>
+                                                                        </button>
+                                                                    </form>
+
+                                                                </div>
+
+
+                                                            </td>
+                                                        </tr>
+                                                        <% }) %>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+
+                                        <% if (brands.length> 0) { %>
+                                            <nav aria-label="Dashboard Pagination">
+                                                <ul class="pagination justify-content-center mt-5">
+
+                                                    <% if (current==1) { %>
+                                                        <li class="page-item disabled"><a href="#"
+                                                                class="page-link">First</a>
+                                                        </li>
+                                                        <% } else { %>
+                                                            <li class="page-item"><a href="/brands?page=1"
+                                                                    class="page-link">First</a>
+                                                            </li>
+                                                            <% } %>
+
+                                                                <% var i=(Number(current)> 5 ? Number(current) - 4 : 1)
+                                                                    %>
+                                                                    <% if(i !==1) { %>
+                                                                        <li class="page-item disabled"><a href="#"
+                                                                                class="page-link">...</a>
+                                                                        </li>
+                                                                        <% } %>
+
+                                                                            <% for(; i <=(Number(current) + 4) && i
+                                                                                <=pages; i++ ) { %>
+                                                                                <% if (i==current) { %>
+                                                                                    <li class="page-item disabled"><a
+                                                                                            href="#" class="page-link">
+                                                                                            <%= i %>
+                                                                                        </a></li>
+                                                                                    <% } else { %>
+                                                                                        <li class="page-item"><a
+                                                                                                href="/brands?page=<%= i %>"
+                                                                                                class="page-link">
+                                                                                                <%= i %>
+                                                                                            </a></li>
+                                                                                        <% } %>
+                                                                                            <% if (i==Number(current) +
+                                                                                                4 && i < pages) { %>
+                                                                                                <li
+                                                                                                    class="page-item disabled">
+                                                                                                    <a href="#"
+                                                                                                        class="page-link">...</a>
+                                                                                                </li>
+                                                                                                <% } %>
+                                                                                                    <% } %>
+
+                                                                                                        <% if
+                                                                                                            (current==pages)
+                                                                                                            { %>
+                                                                                                            <li
+                                                                                                                class="page-item disabled">
+                                                                                                                <a href="#"
+                                                                                                                    class="page-link">Last</a>
+                                                                                                            </li>
+                                                                                                            <% } else {
+                                                                                                                %>
+                                                                                                                <li
+                                                                                                                    class="page-item">
+                                                                                                                    <a href="/brands?page=<%= pages %>"
+                                                                                                                        class="page-link">Last</a>
+                                                                                                                </li>
+                                                                                                                <% } %>
+
+                                                </ul>
+                                            </nav>
+                                            <% } %>
+            </main>
+        </div>
+    </div>
+
+
+
+    <%- include('partials/dashboardFooter.ejs') %>
